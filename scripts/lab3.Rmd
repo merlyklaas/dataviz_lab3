@@ -1,0 +1,68 @@
+---
+title: "lab3"
+author: "Merly Klaas & Cassie Malcom"
+date: "1/31/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(pacman)
+
+p_load(here, rio)
+
+dat <- import(here("data","honeyproduction.csv"))
+dat
+```
+
+## 1. Visualize the total production of honey across years by state Use color to highlight the west coast (Washington, Oregon, and California) with a different color used for each west coast state.
+
+  * Hint 1: I’m not asking for a specific kind of plot, just one that does the preceding. But if you’re trying to visualize change over time, a bar chart is likely not going to be the best choice.
+  * Hint 2: To get each state to be a different color you should either map state to color (for your layer that adds the west coast colors) or use the gghighlight package.
+  
+## 2. Reproduce the plot according three different kinds of color blindness, as well as a desaturated version.
+```{r}
+
+```
+
+## 3. Reproduce the plot using a color blind safe palette.
+
+```{r}
+
+```
+
+## 4. Download the file here denoting the region and division of each state.
+  * Join the file with your honey file.
+  * Produce a bar plot displaying the average honey for each state (collapsing across years).
+  * Use color to highlight the region of the country the state is from.
+  * Note patterns you notice.
+  
+```{r}
+
+```
+  
+## 5. Create a heatmap displaying the average honey production across years by region (averaging across states within region).
+```{r}
+
+```
+
+## 6. Create at least one more plot of your choosing using color to distinguish, represent data values, or highlight. If you are interested in producing maps, I suggest grabbing a simple features data frame of the US using the Albers projection by doing the following:
+
+```{r}
+remotes::install_github("hrbrmstr/albersusa")
+library(albersusa)
+us <- usa_sf()
+
+library(ggplot2)
+ggplot(us) +
+  geom_sf()
+```
+You will likely get a few warnings but they are most likely ignorable. You could also theme it more from here, but if you join it with your honey data, you should be able to fill and/or facet by specific variables.
+
+Note - this is a little trickier than it initially seems because you can “lose” states in your map if they don’t have any data (there are only 44 states represented in your honey dataset). You should still plot all states, but just have them not be filled according to your fill scale if there is no data.
+
+
+
