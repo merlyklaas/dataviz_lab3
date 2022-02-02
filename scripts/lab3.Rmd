@@ -2,17 +2,26 @@
 title: "lab3"
 author: "Merly Klaas & Cassie Malcom"
 date: "1/31/2022"
-output: html_document
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    highlight: kate
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
 ```
 
 ```{r}
 library(pacman)
 
-p_load(here, rio)
+p_load(here, rio, tidyverse, colorspace)
 
 dat <- import(here("data","honeyproduction.csv"))
 dat
@@ -46,13 +55,47 @@ dat
   * Note patterns you notice.
   
 ```{r}
-region <- import(here("data", "us census bureau regions and divisions.csv"))
-dat
+region <- import(here("data", "us census bureau regions and divisions.csv")) %>% 
+  rename(state = `State Code`) 
 
+new <- full_join(region, dat)
+
+  new %>% 
+    drop_na() %>% 
+    group_by(Region, State) %>% 
+    summarise(meanprod = mean(totalprod)) %>% 
+    ggplot() +
+    geom_col(aes(meanprod, fct_reorder(State, meanprod), fill = Region)) + 
+      labs(x= "Average Honey Production",
+       y = "State",
+       title = "Avarage Honey Production for Each State from 1998 - 2021") +
+    scale_x_continuous(expand = c(0,0) ) + 
+  theme (axis.ticks = element_blank()) + 
+    scico::scale_fill_scico_d()
 ```
+
+
   
 ## 5. Create a heatmap displaying the average honey production across years by region (averaging across states within region).
 ```{r}
+new %>% 
+   drop_na() %>% 
+  group_by(year, Region) %>% 
+  summarise(meanprod = mean(totalprod)) %>%
+  ggplot()+ 
+  geom_tile(aes(Region, year, fill = meanprod))+
+  scale_fill_viridis_c(option = "magma") +
+  coord_flip() +
+  theme(legend.position = "bottom",
+        legend.direction = "horizontal",
+        legend.key.size = unit(1, 'cm'),
+        legend.key.height = unit(.5,"cm")) +
+  labs(title = " Average Honey Production across year by Region from 1998 - 2012",
+       fill = "Total Production", 
+       caption = "Notes: Gray color is for states with missing values")
+map <- new %>% 
+    group_by(State) %>% 
+    summarise(meanprod = mean(totalprod)) 
 
 ```
 
@@ -62,10 +105,17 @@ dat
 remotes::install_github("hrbrmstr/albersusa")
 library(albersusa)
 us <- usa_sf()
+join <- full_join(us, map, by=c("name" = "State"))
 
 library(ggplot2)
-ggplot(us) +
-  geom_sf()
+ggplot(join) +
+  geom_sf(aes(fill = meanprod)) +
+  scale_fill_continuous_divergingx(palette = "Earth") +
+  labs(title = " Average Honey Production across year by State from 1998 - 2012",
+       fill = "Total", 
+       caption = "Notes: Gray color is for states with missing values") +
+  theme_void()
+  
 ```
 You will likely get a few warnings but they are most likely ignorable. You could also theme it more from here, but if you join it with your honey data, you should be able to fill and/or facet by specific variables.
 
