@@ -12,7 +12,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-	echo = FALSE,
+	echo = TRUE,
 	message = FALSE,
 	warning = FALSE
 )
@@ -24,7 +24,6 @@ library(pacman)
 p_load(here, rio, tidyverse, colorspace)
 
 dat <- import(here("data","honeyproduction.csv"))
-dat
 ```
 
 ## 1. Visualize the total production of honey across years by state Use color to highlight the west coast (Washington, Oregon, and California) with a different color used for each west coast state.
