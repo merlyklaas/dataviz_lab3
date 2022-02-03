@@ -48,8 +48,12 @@ ggplot(dat, mapping = aes(x = year, y = prodvalue, color = state)) +
     geom_line()
 ```
 
-```{r}
 
+Try this
+```{r}
+ggplot(dat, mapping = aes(x = year, y = prodvalue)) +
+    geom_line(aes(color = state)) + 
+  gghighlight(state == "OR" | state == "WA"| state == "CA")
 ```
   
 ### 2. Reproduce the plot according to three different kinds of color blindness, as well as a desaturated version.
