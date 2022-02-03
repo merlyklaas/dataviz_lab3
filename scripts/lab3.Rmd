@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 ```{r}
 library(pacman)
 
-p_load(here, rio, tidyverse, colorspace)
+p_load(here, rio, tidyverse, colorspace, scico, ggplot2, gghighlight)
 
 dat <- import(here("data","honeyproduction.csv"))
 ```
@@ -32,19 +32,50 @@ dat <- import(here("data","honeyproduction.csv"))
   * Hint 2: To get each state to be a different color you should either map state to color (for your layer that adds the west coast colors) or use the gghighlight package.
 
 ```{r}
+str(dat)
+```
+
+Total Honey Production By State Across Years 1998-2012 (First Attempt - this seems way too busy)
+```{r}
+ggplot(dat, aes(state, prodvalue, color = state)) +
+geom_col(alpha = 0.9) +
+facet_wrap(~year)
+```
+
+2nd attempt - still difficult to discern the lines at the bottom
+```{r}
+ggplot(dat, mapping = aes(x = year, y = prodvalue, color = state)) +
+    geom_line()
+```
+
+```{r}
 
 ```
   
-  
-### 2. Reproduce the plot according three different kinds of color blindness, as well as a desaturated version.
+### 2. Reproduce the plot according to three different kinds of color blindness, as well as a desaturated version.
 ```{r}
+# devtools::install_github("wilkelab/cowplot")
+# install.packages("colorspace", repos = "http://R-Forge.R-project.org")
+# devtools::install_github("clauswilke/colorblindr")
 
+# library(colorblindr)
+```
+
+```{r}
+cbt <- ggplot(dat, mapping = aes(x = year, y = prodvalue, color = state)) +
+    geom_line()
+
+colorblindr::cvd_grid(cbt)
 ```
 
 ### 3. Reproduce the plot using a color blind safe palette.
 
 ```{r}
+cbud <- ggplot(dat, mapping = aes(x = year, y = prodvalue, color = state)) +
+    geom_line() +
+  scale_color_viridis(discrete = TRUE)
 
+cbud
 ```
 
 ### 4. Download the file here denoting the region and division of each state.
