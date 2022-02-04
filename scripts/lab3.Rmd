@@ -14,14 +14,13 @@ output:
 knitr::opts_chunk$set(
 	echo = TRUE,
 	message = FALSE,
-	warning = FALSE
-)
+	warning = FALSE)
 ```
 
 ```{r}
 library(pacman)
 
-p_load(here, rio, tidyverse, colorspace, scico, ggplot2, gghighlight)
+p_load(here, rio, tidyverse, colorspace, scico, ggplot2, gghighlight, colorblindr, viridis)
 
 dat <- import(here("data","honeyproduction.csv"))
 ```
@@ -35,7 +34,7 @@ dat <- import(here("data","honeyproduction.csv"))
 str(dat)
 ```
 
-Total Honey Production By State Across Years 1998-2012 (First Attempt - this seems way too busy)
+First Attempt - this plot with factors seems way too busy
 ```{r}
 ggplot(dat, aes(state, prodvalue, color = state)) +
 geom_col(alpha = 0.9) +
@@ -48,12 +47,13 @@ ggplot(dat, mapping = aes(x = year, y = prodvalue, color = state)) +
     geom_line()
 ```
 
-
-Try this
+3rd attempt - Three states (WA, OR, CA) are highlighted in this version, but lose the color coding to discern all 44 states.
 ```{r}
 ggplot(dat, mapping = aes(x = year, y = prodvalue)) +
-    geom_line(aes(color = state)) + 
-  gghighlight(state == "OR" | state == "WA"| state == "CA")
+    geom_line(aes(color = state), size = 1) + 
+  gghighlight(state == "OR" | state == "WA"| state == "CA") +
+  labs(title = "US Honey Production By State from 1998 to 2012", 
+       x = "Years", y = "Honey Production")
 ```
   
 ### 2. Reproduce the plot according to three different kinds of color blindness, as well as a desaturated version.
@@ -66,8 +66,11 @@ ggplot(dat, mapping = aes(x = year, y = prodvalue)) +
 ```
 
 ```{r}
-cbt <- ggplot(dat, mapping = aes(x = year, y = prodvalue, color = state)) +
-    geom_line()
+cbt <- ggplot(dat, mapping = aes(x = year, y = prodvalue)) +
+    geom_line(aes(color = state), size = 1) + 
+  gghighlight(state == "OR" | state == "WA"| state == "CA") +
+  labs(title = "US Honey Production By State from 1998 to 2012", 
+       x = "Years", y = "Honey Production")
 
 colorblindr::cvd_grid(cbt)
 ```
@@ -75,9 +78,13 @@ colorblindr::cvd_grid(cbt)
 ### 3. Reproduce the plot using a color blind safe palette.
 
 ```{r}
-cbud <- ggplot(dat, mapping = aes(x = year, y = prodvalue, color = state)) +
-    geom_line() +
-  scale_color_viridis(discrete = TRUE)
+cbud <- ggplot(dat, mapping = aes(x = year, y = prodvalue)) +
+    geom_line(aes(color = state), size = 1) + 
+  scale_color_viridis(discrete = TRUE) +
+  gghighlight(state == "OR" | state == "WA"| state == "CA") +
+  labs(title = "US Honey Production By State from 1998 to 2012", 
+       x = "Years", y = "Honey Production")
+  
 
 cbud
 ```
