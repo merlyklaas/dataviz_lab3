@@ -30,7 +30,7 @@ dat <- import(here("data","honeyproduction.csv"))
   * Hint 1: I’m not asking for a specific kind of plot, just one that does the preceding. But if you’re trying to visualize change over time, a bar chart is likely not going to be the best choice.
   * Hint 2: To get each state to be a different color you should either map state to color (for your layer that adds the west coast colors) or use the gghighlight package.
 
-```{r}
+```{r include=FALSE}
 str(dat)
 ```
 
@@ -53,7 +53,9 @@ ggplot(dat, mapping = aes(x = year, y = prodvalue)) +
     geom_line(aes(color = state), size = 1) + 
   gghighlight(state == "OR" | state == "WA"| state == "CA") +
   labs(title = "US Honey Production By State from 1998 to 2012", 
-       x = "Years", y = "Honey Production")
+       x = "Years", y = "Honey Production") +  
+  scale_y_continuous(expand = c(0,0), labels = scales::comma ) +
+  theme_light()
 ```
   
 ### 2. Reproduce the plot according to three different kinds of color blindness, as well as a desaturated version.
@@ -69,8 +71,8 @@ ggplot(dat, mapping = aes(x = year, y = prodvalue)) +
 cbt <- ggplot(dat, mapping = aes(x = year, y = prodvalue)) +
     geom_line(aes(color = state), size = 1) + 
   gghighlight(state == "OR" | state == "WA"| state == "CA") +
-  labs(title = "US Honey Production By State from 1998 to 2012", 
-       x = "Years", y = "Honey Production")
+  labs(title = "US Honey Production By State", 
+       x = "Years", y = "Honey Production") 
 
 colorblindr::cvd_grid(cbt)
 ```
@@ -82,8 +84,11 @@ cbud <- ggplot(dat, mapping = aes(x = year, y = prodvalue)) +
     geom_line(aes(color = state), size = 1) + 
   scale_color_viridis(discrete = TRUE) +
   gghighlight(state == "OR" | state == "WA"| state == "CA") +
+  scale_y_continuous(labels = scales::comma ) +
+    scale_x_continuous(expand = c(0,0)) +
   labs(title = "US Honey Production By State from 1998 to 2012", 
-       x = "Years", y = "Honey Production")
+       x = "Years", y = "Honey Production") + 
+  theme_light()
   
 
 cbud
@@ -109,11 +114,12 @@ new <- full_join(region, dat)
     geom_col(aes(meanprod, fct_reorder(State, meanprod), fill = Region)) + 
       labs(x= "Average Honey Production",
        y = "State",
-       title = "Avarage Honey Production by State from 1998 - 2012") +
-    scale_x_continuous(expand = c(0,0) ) + 
+       title = "Avarage Honey Production by State from 1998 - 2012") + 
+    theme_light()+
+    scale_x_continuous(expand = c(0,0), labels = scales::comma ) + 
   theme (axis.ticks = element_blank()) + 
-    scico::scale_fill_scico_d() +
-    theme_light()
+    scico::scale_fill_scico_d() 
+   
 ```
 
 Some emerging patterns:
@@ -158,7 +164,7 @@ join <- full_join(us, map, by=c("name" = "State"))
 library(ggplot2)
 ggplot(join) +
   geom_sf(aes(fill = meanprod)) +
-  scale_fill_continuous_divergingx(palette = "Earth") +
+  scale_fill_continuous_divergingx(palette = "Earth",  labels = scales::comma) +
   labs(title = "Honey Production across year by State from 1998 - 2012",
        fill = "Production", 
        caption = "Notes: Gray color is for states with missing values; Data collected in 1998-2012 \nSource: https://github.com/rfordatascience/tidytuesday/tree/master/data/2018/2018-05-21") +
